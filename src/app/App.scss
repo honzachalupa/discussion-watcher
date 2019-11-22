@@ -1,0 +1,32 @@
+@import 'css-reset-and-normalize-sass/scss/flavored-reset-and-normalize';
+
+$background-color: #fff;
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: $background-color;
+    padding: 12px;
+
+    button {
+        &:hover,
+        &:focus,
+        &:active {
+            border: none;
+            outline: none;
+        }
+    }
+
+    input,
+    textarea,
+    select {
+        &:-webkit-autofill {
+            box-shadow: 0 0 0 1000px white inset;
+
+            &:hover,
+            &:focus {
+                box-shadow: 0 0 0 1000px white inset;
+            }
+        }
+    }
+}

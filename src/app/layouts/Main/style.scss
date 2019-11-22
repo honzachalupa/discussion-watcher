@@ -1,0 +1,152 @@
+[data-component="Layout_Main"] {
+    h1,
+    h2,
+    h3 {
+        color: $accent-color;
+    }
+
+    .flex {
+        display: flex;
+        flex-wrap: wrap;
+
+        &-2 > * {
+            flex-basis: 50%;
+        }
+
+        &-3 > * {
+            flex-basis: calc(100% / 3);
+        }
+
+        &-4 > * {
+            flex-basis: 25%;
+        }
+
+        &-horizontal {
+            flex-direction: row;
+        }
+
+        &-vertical {
+            flex-direction: column;
+        }
+
+        &-center-h {
+            align-items: center;
+        }
+
+        &-center-v {
+            justify-content: center;
+        }
+    }
+
+    .grid {
+        display: grid;
+
+        &.desk-layout {
+            width: calc(50vw - 120px);
+            height: calc(50vw - 120px);
+            margin: 50px;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+            grid-gap: 15px;
+            grid-template-areas:
+                ". p1 p2 ."
+                "p8 desk desk p3"
+                "p7 desk desk p4"
+                ". p6 p5 .";
+
+            .tile {
+                width: 100%;
+                height: 100%;
+
+                &:nth-child(1) {
+                    grid-area: p1;
+                }
+
+                &:nth-child(2) {
+                    grid-area: p2;
+                }
+
+                &:nth-child(3) {
+                    grid-area: p3;
+                }
+
+                &:nth-child(4) {
+                    grid-area: p4;
+                }
+
+                &:nth-child(5) {
+                    grid-area: p5;
+                }
+
+                &:nth-child(6) {
+                    grid-area: p6;
+                }
+
+                &:nth-child(7) {
+                    grid-area: p7;
+                }
+
+                &:nth-child(8) {
+                    grid-area: p8;
+                }
+            }
+
+            .desk {
+                grid-area: desk;
+                background-color: lightgray;
+                border-radius: 3px;
+                opacity: 0.3;
+            }
+        }
+    }
+
+    .tile {
+        @extend .flex, .flex-vertical, .flex-center-h, .flex-center-v;
+
+        width: 100px;
+        height: 100px;
+        background-color: lightgray;
+        text-align: center;
+        border: none;
+        border-radius: 3px;
+        position: relative;
+
+        &.orange {
+            background-color: transparentize(orange, 0.7);
+        }
+
+        &.active {
+            background-color: #48b400;
+            color: white;
+            box-shadow: 0 0 30px #48b400;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: 100;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .label {
+            font-size: 14px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        .color-overlay {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: all 1s;
+        }
+
+        &[type="button"]:hover {
+            opacity: 0.85;
+        }
+    }
+}
