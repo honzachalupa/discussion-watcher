@@ -7,7 +7,7 @@ import MemberFemaleIcon from 'Icons/person-female';
 import AddMemberIcon from 'Icons/plus';
 
 export default ({ type, member }) => {
-    const { members, setCurrentMember, selectedMemberId, timerPause, updateContextProperty } = useContext(Context);
+    const { members, setCurrentMember, selectedMemberId, isTimerRunning, timerPause, updateContextProperty } = useContext(Context);
 
     const SEX_MALE = 'MALE';
     const SEX_FEMALE = 'FEMALE';
@@ -40,7 +40,7 @@ export default ({ type, member }) => {
         <div className="item add-new" onClick={addMember} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
 
-            <p className="button" type="button">Pozastavit diskuzi a přidat člena</p>
+            <p className="button" type="button">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>
         </div>
     );
 };

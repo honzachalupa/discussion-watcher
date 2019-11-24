@@ -28,8 +28,14 @@
     }
 
     &.member {
-        &.selected {
+        cursor: pointer;
+
+        &:hover {
             border: 2px solid lightgray;
+        }
+
+        &.selected {
+            border: 2px solid darkgray;
         }
     }
 

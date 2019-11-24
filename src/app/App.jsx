@@ -1,5 +1,7 @@
 /* globals __BASENAME__ */
 
+// To-do: Rewrite to React Hooks syntax.
+
 import '@babel/polyfill';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
@@ -25,17 +27,16 @@ class App extends Component {
     globalFunctions = {
         updateContextProperty: this.updateContextProperty,
         clearPersistentState: this.clearPersistentState,
-        timerPlay: this.timerPlay,
+        timerStart: this.timerStart,
         timerPause: this.timerPause,
         timerStop: this.timerStop,
         setCurrentMember: this.setCurrentMember
     };
 
     state = {
+        ...this.getPersistentState(),
         selectedMemberId: null,
-        isTimeRunning: false,
-        ...this.globalFunctions,
-        ...this.getPersistentState()
+        isTimerRunning: false
     }
 
     componentDidMount() {
@@ -43,21 +44,25 @@ class App extends Component {
             app.initServiceWorker();
         }
 
-        window.addEventListener('beforeunload', e => {
-            e.preventDefault();
-
-            return this.setPersistentState();
-        });
+        window.addEventListener('beforeunload', e => this.onPageWillReload(e));
     }
 
     componentDidUpdate(_, prevState) {
         if (prevState.selectedMemberId !== this.state.selectedMemberId) {
             if (this.state.selectedMemberId === null) {
                 this.timerPause();
-            } else {
-                this.changeMember(this.state.selectedMemberId);
             }
         }
+    }
+
+    componentWillUnount() {
+        window.removeEventListener('beforeunload', e => this.onPageWillReload(e));
+    }
+
+    onPageWillReload(e) {
+        e.preventDefault();
+
+        return this.setPersistentState();
     }
 
     getPersistentState() {
@@ -71,23 +76,32 @@ class App extends Component {
     }
 
     @autobind
-    timerPlay() {
-        this.setState(prevState => ({
-            isTimeRunning: true,
-            time: prevState.time + 1
-        }));
+    clearPersistentState() {
+        this.setState(this.defaultState);
 
-        this.timeInterval = setInterval(() => {
+        localStorage.setItem('state', JSON.stringify(this.defaultState));
+    }
+
+    @autobind
+    timerStart() {
+        if (!this.state.isTimerRunning) {
             this.setState(prevState => ({
+                isTimerRunning: true,
                 time: prevState.time + 1
             }));
-        }, 1000);
+
+            this.timeInterval = setInterval(() => {
+                this.setState(prevState => ({
+                    time: prevState.time + 1
+                }));
+            }, 1000);
+        }
     }
 
     @autobind
     timerPause() {
         this.setState({
-            isTimeRunning: false,
+            isTimerRunning: false,
             selectedMemberId: null
         });
 
@@ -99,7 +113,7 @@ class App extends Component {
         this.timerPause();
 
         this.setState({
-            isTimeRunning: false,
+            isTimerRunning: false,
             time: 0,
             selectedMemberId: null
         });
@@ -110,14 +124,8 @@ class App extends Component {
         this.setState(prevState => ({
             selectedMemberId: prevState.selectedMemberId !== id ? id : null
         }));
-    }
 
-    changeMember(id) {
-        if (!this.state.isTimeRunning) {
-            this.timerPlay();
-        }
-
-        console.log(id);
+        this.timerStart();
     }
 
     @autobind
@@ -127,16 +135,9 @@ class App extends Component {
         });
     }
 
-    @autobind
-    clearPersistentState() {
-        this.setState(this.defaultState);
-
-        localStorage.setItem('state', JSON.stringify(this.defaultState));
-    }
-
     render() {
         return (
-            <Context.Provider value={this.state}>
+            <Context.Provider value={{ ...this.state, ...this.globalFunctions }}>
                 <Router basename={__BASENAME__}>
                     <Switch>
                         <Route component={Page_Home} path="/" exact />

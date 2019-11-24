@@ -6,7 +6,7 @@ import StopIcon from 'Icons/controls-stop';
 import './style';
 
 export default () => {
-    const { timerPlay, timerPause, timerStop } = useContext(Context);
+    const { timerStart, timerPause, timerStop } = useContext(Context);
 
     return (
         <div>
@@ -14,7 +14,7 @@ export default () => {
                 <img className="icon" src={PauseIcon} alt="" />
             </button>
 
-            <button className="button" onClick={timerPlay} type="button">
+            <button className="button" onClick={timerStart} type="button">
                 <img className="icon" src={PlayIcon} alt="" />
             </button>
 

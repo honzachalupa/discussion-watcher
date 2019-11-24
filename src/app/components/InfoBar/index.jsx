@@ -3,11 +3,11 @@ import { Context } from '@honzachalupa/helpers';
 import './style';
 
 export default () => {
-    const { time, isTimeRunning } = useContext(Context);
+    const { time, isTimerRunning } = useContext(Context);
 
     return time === 0 ? (
-        <p>Začněte novou diskuzi...</p>
-    ) : !isTimeRunning ? (
+        <p>Přidejte členy a začněte novou diskuzi...</p>
+    ) : !isTimerRunning ? (
         <p>Diskuze je pozastavena (čas: {time} sekund)</p>
     ) : (
         <p>Diskuze běží {time} sekund.</p>
