@@ -24,7 +24,7 @@ class App extends Component {
 
     globalFunctions = {
         updateContextProperty: this.updateContextProperty,
-        clearCache: this.clearCache,
+        clearPersistentState: this.clearPersistentState,
         timerPlay: this.timerPlay,
         timerPause: this.timerPause,
         timerStop: this.timerStop,
@@ -128,7 +128,7 @@ class App extends Component {
     }
 
     @autobind
-    clearCache() {
+    clearPersistentState() {
         this.setState(this.defaultState);
 
         localStorage.setItem('state', JSON.stringify(this.defaultState));

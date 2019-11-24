@@ -20,7 +20,7 @@ export default ({ type, member }) => {
         return {
             id,
             name: `Nový člen ${id}`,
-            sex: Math.round(Math.random() * 1000) % 2 === 0 ? SEX_MALE : SEX_FEMALE
+            sex: Math.round(Math.random() * 10) % 2 === 0 ? SEX_MALE : SEX_FEMALE
         };
     };
 

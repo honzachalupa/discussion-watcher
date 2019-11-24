@@ -13,9 +13,11 @@ export default () => {
             <button className="button" onClick={timerPause} type="button">
                 <img className="icon" src={PauseIcon} alt="" />
             </button>
+
             <button className="button" onClick={timerPlay} type="button">
                 <img className="icon" src={PlayIcon} alt="" />
             </button>
+
             <button className="button" onClick={timerStop} type="button">
                 <img className="icon" src={StopIcon} alt="" />
             </button>
