@@ -22,16 +22,20 @@ class App extends Component {
         time: 0
     };
 
-    state = {
-        ...this.getSavedState(),
-        selectedMemberId: null,
-        isTimeRunning: false,
+    globalFunctions = {
         updateContextProperty: this.updateContextProperty,
         clearCache: this.clearCache,
-        timePlay: this.timePlay,
-        timePause: this.timePause,
-        timeStop: this.timeStop,
-        selectMember: this.selectMember
+        timerPlay: this.timerPlay,
+        timerPause: this.timerPause,
+        timerStop: this.timerStop,
+        setCurrentMember: this.setCurrentMember
+    };
+
+    state = {
+        selectedMemberId: null,
+        isTimeRunning: false,
+        ...this.globalFunctions,
+        ...this.getPersistentState()
     }
 
     componentDidMount() {
@@ -42,32 +46,32 @@ class App extends Component {
         window.addEventListener('beforeunload', e => {
             e.preventDefault();
 
-            return this.saveState();
+            return this.setPersistentState();
         });
     }
 
     componentDidUpdate(_, prevState) {
         if (prevState.selectedMemberId !== this.state.selectedMemberId) {
             if (this.state.selectedMemberId === null) {
-                this.timePause();
+                this.timerPause();
             } else {
                 this.changeMember(this.state.selectedMemberId);
             }
         }
     }
 
-    getSavedState() {
+    getPersistentState() {
         return new RegExp(this.jsonPattern).test(localStorage.getItem('state'))
             ? JSON.parse(localStorage.getItem('state'))
             : this.defaultState;
     }
 
-    saveState() {
+    setPersistentState() {
         localStorage.setItem('state', JSON.stringify(this.state));
     }
 
     @autobind
-    timePlay() {
+    timerPlay() {
         this.setState(prevState => ({
             isTimeRunning: true,
             time: prevState.time + 1
@@ -81,7 +85,7 @@ class App extends Component {
     }
 
     @autobind
-    timePause() {
+    timerPause() {
         this.setState({
             isTimeRunning: false,
             selectedMemberId: null
@@ -91,8 +95,8 @@ class App extends Component {
     }
 
     @autobind
-    timeStop() {
-        this.timePause();
+    timerStop() {
+        this.timerPause();
 
         this.setState({
             isTimeRunning: false,
@@ -102,7 +106,7 @@ class App extends Component {
     }
 
     @autobind
-    selectMember(id) {
+    setCurrentMember(id) {
         this.setState(prevState => ({
             selectedMemberId: prevState.selectedMemberId !== id ? id : null
         }));
@@ -110,7 +114,7 @@ class App extends Component {
 
     changeMember(id) {
         if (!this.state.isTimeRunning) {
-            this.timePlay();
+            this.timerPlay();
         }
 
         console.log(id);

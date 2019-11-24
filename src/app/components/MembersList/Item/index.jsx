@@ -7,12 +7,12 @@ import MemberFemaleIcon from 'Icons/person-female';
 import AddMemberIcon from 'Icons/plus';
 
 export default ({ type, member }) => {
-    const { members, selectMember, selectedMemberId, timePause, updateContextProperty } = useContext(Context);
+    const { members, setCurrentMember, selectedMemberId, timerPause, updateContextProperty } = useContext(Context);
 
     const SEX_MALE = 'MALE';
     const SEX_FEMALE = 'FEMALE';
 
-    const getNewId = () => members.length + 1;
+    const getNewId = () => members.length + 1; // To-do: Add more logic.
 
     const getDefaultMember = () => {
         const id = getNewId();
@@ -25,13 +25,13 @@ export default ({ type, member }) => {
     };
 
     const addMember = () => {
-        timePause();
+        timerPause();
 
         updateContextProperty('members', [...members, getDefaultMember()]);
     };
 
     return type === 'member' ? (
-        <div className={cx('item', 'member', { selected: member.id === selectedMemberId })} onClick={() => selectMember(member.id)} type="button" data-component="MembersList_Item">
+        <div className={cx('item', 'member', { selected: member.id === selectedMemberId })} onClick={() => setCurrentMember(member.id)} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }} />
 
             <p className="name">{member.name}</p>
