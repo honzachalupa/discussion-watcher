@@ -5,9 +5,10 @@ import './style';
 import MemberMaleIcon from 'Icons/person-male';
 import MemberFemaleIcon from 'Icons/person-female';
 import AddMemberIcon from 'Icons/plus';
+import TimeBar from './TimeBar';
 
 export default ({ type, member }) => {
-    const { members, setCurrentMember, selectedMemberId, isTimerRunning, timerPause, updateContextProperty } = useContext(Context);
+    const { members, setCurrentMember, currentMemberId, isTimerRunning, timerPause, updateContextProperty } = useContext(Context);
 
     const SEX_MALE = 'MALE';
     const SEX_FEMALE = 'FEMALE';
@@ -31,16 +32,18 @@ export default ({ type, member }) => {
     };
 
     return type === 'member' ? (
-        <div className={cx('item', 'member', { selected: member.id === selectedMemberId })} onClick={() => setCurrentMember(member.id)} type="button" data-component="MembersList_Item">
+        <div className={cx('item', 'member', { selected: member.id === currentMemberId })} onClick={() => setCurrentMember(member.id)} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }} />
 
-            <p className="name">{member.name}</p>
+            <TimeBar memberId={member.id} />
+
+            <p className="label">{member.name}</p>
         </div>
     ) : (
         <div className="item add-new" onClick={addMember} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
 
-            <p className="button" type="button">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>
+            <p className="label">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>
         </div>
     );
 };

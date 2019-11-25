@@ -30,7 +30,7 @@ const App = () => {
     const [state] = useState(getPersistentState());
     const [time, setTime] = useState(0);
     const [isTimerRunning, setTimerRunning] = useState(false);
-    const [selectedMemberId, setSelectedMemberId] = useState(null);
+    const [currentMemberId, setSelectedMemberId] = useState(null);
     const [isFirstRun, setFirstRun] = useState(true);
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const App = () => {
             setFirstRun(false);
         }
 
-        if (selectedMemberId === null) {
+        if (currentMemberId === null) {
             timerPause();
         }
 
@@ -105,7 +105,7 @@ const App = () => {
     }
 
     function setCurrentMember(id) {
-        setSelectedMemberId(selectedMemberId === null ? id : null);
+        setSelectedMemberId(currentMemberId === null ? id : null);
         timerStart();
     }
 

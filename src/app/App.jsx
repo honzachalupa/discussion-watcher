@@ -19,7 +19,8 @@ class App extends Component {
     defaultState = {
         members: [],
         times: {},
-        time: 0
+        time: 3600, // 1 hour in seconds
+        timeFormatted: '0:00'
     };
 
     globalFunctions = {
@@ -33,7 +34,7 @@ class App extends Component {
 
     state = {
         ...this.getPersistentState(),
-        selectedMemberId: null,
+        currentMemberId: null,
         isTimerRunning: false
     }
 
@@ -42,22 +43,28 @@ class App extends Component {
             app.initServiceWorker();
         }
 
-        window.addEventListener('beforeunload', e => this.onPageWillReload(e));
+        window.addEventListener('beforeunload', e => this.onPageWillUnload(e));
     }
 
-    componentDidUpdate(_, prevState) {
-        if (prevState.selectedMemberId !== this.state.selectedMemberId) {
-            if (this.state.selectedMemberId === null) {
+    componentDidUpdate(_, { time, currentMemberId }) {
+        if (currentMemberId !== this.state.currentMemberId) {
+            if (this.state.currentMemberId === null) {
                 this.timerPause();
             }
+        }
+
+        if (time !== this.state.time) {
+            this.setState({
+                timeFormatted: this.formatTimeFromSeconds(time)
+            });
         }
     }
 
     componentWillUnmount() {
-        window.removeEventListener('beforeunload', e => this.onPageWillReload(e));
+        window.removeEventListener('beforeunload', this.onPageWillUnload);
     }
 
-    onPageWillReload(e) {
+    onPageWillUnload(e) {
         e.preventDefault();
 
         return this.setPersistentState();
@@ -83,15 +90,14 @@ class App extends Component {
     @autobind
     timerStart() {
         if (!this.state.isTimerRunning) {
-            this.setState(prevState => ({
-                isTimerRunning: true,
-                time: prevState.time + 1
-            }));
+            this.setState({
+                isTimerRunning: true
+            });
+
+            this.tick();
 
             this.timeInterval = setInterval(() => {
-                this.setState(prevState => ({
-                    time: prevState.time + 1
-                }));
+                this.tick();
             }, 1000);
         }
     }
@@ -100,7 +106,7 @@ class App extends Component {
     timerPause() {
         this.setState({
             isTimerRunning: false,
-            selectedMemberId: null
+            currentMemberId: null
         });
 
         clearInterval(this.timeInterval);
@@ -112,15 +118,27 @@ class App extends Component {
 
         this.setState({
             isTimerRunning: false,
-            time: 0,
-            selectedMemberId: null
+            time: this.defaultState.time,
+            times: this.defaultState.times,
+            currentMemberId: null
+        });
+    }
+
+    tick() {
+        this.setState(({ time, times, currentMemberId }) => {
+            times[currentMemberId] = (times[currentMemberId] || this.defaultState.time / 4) - 1;
+
+            return {
+                time: time - 1,
+                times
+            };
         });
     }
 
     @autobind
     setCurrentMember(id) {
-        this.setState(prevState => ({
-            selectedMemberId: prevState.selectedMemberId !== id ? id : null
+        this.setState(({ currentMemberId }) => ({
+            currentMemberId: currentMemberId !== id ? id : null
         }));
 
         this.timerStart();
@@ -131,6 +149,10 @@ class App extends Component {
         this.setState({
             [key]: value
         });
+    }
+
+    formatTimeFromSeconds(s) {
+        return s < 60 ? `${s} sekund` : `${Math.round(s / 60)} minut`;
     }
 
     render() {

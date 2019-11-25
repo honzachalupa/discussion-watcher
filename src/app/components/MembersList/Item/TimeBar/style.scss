@@ -1,0 +1,15 @@
+[data-component="TimeBar"] {
+    width: 100%;
+    padding: 0 17px;
+
+    .color-container {
+        height: 8px;
+        background-color: red;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+
+    .label {
+        font-size: 14px;
+    }
+}
