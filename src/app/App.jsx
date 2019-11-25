@@ -16,8 +16,6 @@ import Page_NotFound from 'Pages/NotFound';
 class App extends Component {
     timeInterval = null;
 
-    jsonPattern = /^(\[|{).*(\]|})$/;
-
     defaultState = {
         members: [],
         times: {},
@@ -55,7 +53,7 @@ class App extends Component {
         }
     }
 
-    componentWillUnount() {
+    componentWillUnmount() {
         window.removeEventListener('beforeunload', e => this.onPageWillReload(e));
     }
 
@@ -66,7 +64,7 @@ class App extends Component {
     }
 
     getPersistentState() {
-        return new RegExp(this.jsonPattern).test(localStorage.getItem('state'))
+        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state'))
             ? JSON.parse(localStorage.getItem('state'))
             : this.defaultState;
     }
