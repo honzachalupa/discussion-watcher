@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Context } from '@honzachalupa/helpers';
-import Controls from 'Components/Controls';
-import InfoBar from 'Components/InfoBar';
+import Controls from './Controls';
+import InfoBar from './InfoBar';
 import './style';
 
 export default () => {

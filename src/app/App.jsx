@@ -16,11 +16,13 @@ import Page_NotFound from 'Pages/NotFound';
 class App extends Component {
     timeInterval = null;
 
+    defaultTime = 3600; // 1 hour in seconds
+
     defaultState = {
         members: [],
         times: {},
-        time: 3600, // 1 hour in seconds
-        timeFormatted: '0:00'
+        time: this.defaultTime,
+        timeFormatted: this.formatTimeFromSeconds(this.defaultTime)
     };
 
     globalFunctions = {
@@ -34,6 +36,7 @@ class App extends Component {
 
     state = {
         ...this.getPersistentState(),
+        defaultTime: this.defaultTime,
         currentMemberId: null,
         isTimerRunning: false
     }
@@ -47,16 +50,14 @@ class App extends Component {
     }
 
     componentDidUpdate(_, { time, currentMemberId }) {
-        if (currentMemberId !== this.state.currentMemberId) {
-            if (this.state.currentMemberId === null) {
-                this.timerPause();
-            }
+        if (currentMemberId !== this.state.currentMemberId && this.state.currentMemberId === null) {
+            this.timerPause();
         }
 
         if (time !== this.state.time) {
-            this.setState({
+            this.setState(({ time }) => ({
                 timeFormatted: this.formatTimeFromSeconds(time)
-            });
+            }));
         }
     }
 
@@ -98,7 +99,7 @@ class App extends Component {
 
             this.timeInterval = setInterval(() => {
                 this.tick();
-            }, 1000);
+            }, 50);
         }
     }
 

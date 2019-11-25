@@ -27,7 +27,6 @@ export default ({ type, member }) => {
 
     const addMember = () => {
         timerPause();
-
         updateContextProperty('members', [...members, getDefaultMember()]);
     };
 
