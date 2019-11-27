@@ -8,7 +8,7 @@ import AddMemberIcon from 'Icons/plus';
 import TimeBar from './TimeBar';
 
 export default ({ type, member }) => {
-    const { members, setCurrentMember, currentMemberId, isTimerRunning, timerPause, updateContextProperty } = useContext(Context);
+    const { members, setCurrentMember, currentMemberId, isTimerRunning, timerPause, addMember } = useContext(Context);
 
     const SEX_MALE = 'MALE';
     const SEX_FEMALE = 'FEMALE';
@@ -25,9 +25,10 @@ export default ({ type, member }) => {
         };
     };
 
-    const addMember = () => {
+    const handleAddMember = () => {
         timerPause();
-        updateContextProperty('members', [...members, getDefaultMember()]);
+
+        addMember(getDefaultMember());
     };
 
     return type === 'member' ? (
@@ -39,7 +40,7 @@ export default ({ type, member }) => {
             <p className="label">{member.name}</p>
         </div>
     ) : (
-        <div className="item add-new" onClick={addMember} type="button" data-component="MembersList_Item">
+        <div className="item add-new" onClick={handleAddMember} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
 
             <p className="label">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>

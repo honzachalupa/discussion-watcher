@@ -5,5 +5,5 @@ module.exports = {
     accentColor: '#ff5252',
     developerName: 'Jan Chalupa',
     developerUrl: 'https://www.honzachalupa.cz/',
-    caching: true
+    caching: false // To-do: Enable before releasing.
 };

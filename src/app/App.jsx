@@ -1,173 +1,173 @@
 /* globals __BASENAME__ */
 
-// To-do: Rewrite to React Hooks syntax.
-
 import '@babel/polyfill';
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { autobind } from 'core-decorators';
 import { Context, app } from '@honzachalupa/helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
-class App extends Component {
-    timeInterval = null;
-
-    defaultTime = 3600; // 1 hour in seconds
-
-    defaultState = {
-        members: [],
-        times: {},
-        time: this.defaultTime,
-        timeFormatted: this.formatTimeFromSeconds(this.defaultTime)
-    };
-
-    globalFunctions = {
-        updateContextProperty: this.updateContextProperty,
-        clearPersistentState: this.clearPersistentState,
-        timerStart: this.timerStart,
-        timerPause: this.timerPause,
-        timerStop: this.timerStop,
-        setCurrentMember: this.setCurrentMember
-    };
-
-    state = {
-        ...this.getPersistentState(),
-        defaultTime: this.defaultTime,
+const App = () => {
+    const [isFirstRun, setFirstRun] = useState(true);
+    const [timerInterval, setTimerInterval] = useState();
+    const [state, setState] = useState({
+        defaultTime: 3600,
         currentMemberId: null,
         isTimerRunning: false
-    }
+    });
 
-    componentDidMount() {
-        if (config.caching) {
-            app.initServiceWorker();
-        }
+    const defaultState = {
+        members: [],
+        times: {},
+        time: state.defaultTime,
+        timeFormatted: formatTimeFromSeconds(state.defaultTime)
+    };
 
-        window.addEventListener('beforeunload', e => this.onPageWillUnload(e));
-    }
+    const globalFunctions = {
+        clearPersistentState,
+        timerStart,
+        timerPause,
+        timerStop,
+        addMember,
+        setCurrentMember
+    };
 
-    componentDidUpdate(_, { time, currentMemberId }) {
-        if (currentMemberId !== this.state.currentMemberId && this.state.currentMemberId === null) {
-            this.timerPause();
-        }
+    useEffect(() => {
+        console.log('isFirstRun', isFirstRun);
 
-        if (time !== this.state.time) {
-            this.setState(({ time }) => ({
-                timeFormatted: this.formatTimeFromSeconds(time)
-            }));
-        }
-    }
+        if (isFirstRun) {
+            setFirstRun(false);
 
-    componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.onPageWillUnload);
-    }
+            if (config.caching) {
+                app.initServiceWorker();
+            }
 
-    onPageWillUnload(e) {
-        e.preventDefault();
+            setState(prevState => {
+                console.log(getPersistentState(), prevState);
 
-        return this.setPersistentState();
-    }
-
-    getPersistentState() {
-        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state'))
-            ? JSON.parse(localStorage.getItem('state'))
-            : this.defaultState;
-    }
-
-    setPersistentState() {
-        localStorage.setItem('state', JSON.stringify(this.state));
-    }
-
-    @autobind
-    clearPersistentState() {
-        this.setState(this.defaultState);
-
-        localStorage.setItem('state', JSON.stringify(this.defaultState));
-    }
-
-    @autobind
-    timerStart() {
-        if (!this.state.isTimerRunning) {
-            this.setState({
-                isTimerRunning: true
+                return {
+                    ...getPersistentState(),
+                    ...prevState
+                };
             });
 
-            this.tick();
+            window.addEventListener('beforeunload', e => onPageWillUnload(e));
+        }
 
-            this.timeInterval = setInterval(() => {
-                this.tick();
-            }, 50);
+        setState(prevState => ({
+            ...prevState,
+            timeFormatted: formatTimeFromSeconds(state.time)
+        }));
+
+        return () => window.removeEventListener('beforeunload', e => onPageWillUnload(e));
+    }, [isFirstRun, state.time]);
+
+    function onPageWillUnload(e) {
+        e.preventDefault();
+
+        setPersistentState();
+    }
+
+    function getPersistentState() {
+        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state'))
+            ? JSON.parse(localStorage.getItem('state'))
+            : defaultState;
+    }
+
+    function setPersistentState() {
+        localStorage.setItem('state', JSON.stringify(state));
+    }
+
+    function clearPersistentState() {
+        setState(defaultState);
+
+        localStorage.setItem('state', JSON.stringify(defaultState));
+    }
+
+    function timerStart() {
+        if (!state.isTimerRunning) {
+            setState(prevState => ({
+                ...prevState,
+                isTimerRunning: true
+            }));
+
+            tick();
+
+            const timerInterval = setInterval(() => {
+                tick();
+            }, 1000);
+
+            setTimerInterval(timerInterval);
         }
     }
 
-    @autobind
-    timerPause() {
-        this.setState({
+    function timerPause() {
+        clearInterval(timerInterval);
+
+        setState(prevState => ({
+            ...prevState,
             isTimerRunning: false,
             currentMemberId: null
-        });
-
-        clearInterval(this.timeInterval);
+        }));
     }
 
-    @autobind
-    timerStop() {
-        this.timerPause();
+    function timerStop() {
+        clearInterval(timerInterval);
 
-        this.setState({
+        setState(prevState => ({
+            ...prevState,
             isTimerRunning: false,
-            time: this.defaultState.time,
-            times: this.defaultState.times,
-            currentMemberId: null
-        });
+            currentMemberId: null,
+            time: defaultState.time,
+            times: defaultState.times
+        }));
     }
 
-    tick() {
-        this.setState(({ time, times, currentMemberId }) => {
-            times[currentMemberId] = (times[currentMemberId] || this.defaultState.time / 4) - 1;
+    function tick() {
+        setState(prevState => {
+            prevState.times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultState.time / 4) - 1;
 
             return {
-                time: time - 1,
-                times
+                ...prevState,
+                time: prevState.time - 1,
+                times: prevState.times
             };
         });
     }
 
-    @autobind
-    setCurrentMember(id) {
-        this.setState(({ currentMemberId }) => ({
-            currentMemberId: currentMemberId !== id ? id : null
+    function addMember(member) {
+        setState(prevState => ({
+            ...prevState,
+            members: [...prevState.members, member]
+        }));
+    }
+
+    function setCurrentMember(id) {
+        setState(prevState => ({
+            ...prevState,
+            currentMemberId: state.currentMemberId !== id ? id : null
         }));
 
-        this.timerStart();
+        timerStart();
     }
 
-    @autobind
-    updateContextProperty(key, value) {
-        this.setState({
-            [key]: value
-        });
-    }
-
-    formatTimeFromSeconds(s) {
+    function formatTimeFromSeconds(s) {
         return s < 60 ? `${s} sekund` : `${Math.round(s / 60)} minut`;
     }
 
-    render() {
-        return (
-            <Context.Provider value={{ ...this.state, ...this.globalFunctions }}>
-                <Router basename={__BASENAME__}>
-                    <Switch>
-                        <Route component={Page_Home} path="/" exact />
-                        <Route component={Page_NotFound} exact />
-                    </Switch>
-                </Router>
-            </Context.Provider>
-        );
-    }
-}
+    return state.time ? (
+        <Context.Provider value={{ ...state, ...globalFunctions }}>
+            <Router basename={__BASENAME__}>
+                <Switch>
+                    <Route component={Page_Home} path="/" exact />
+                    <Route component={Page_NotFound} exact />
+                </Switch>
+            </Router>
+        </Context.Provider>
+    ) : null;
+};
 
 render(<App />, document.querySelector('#app'));
