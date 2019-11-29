@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import colormap from 'colormap';
 import { Context } from '@honzachalupa/helpers';
+import { formatTimeFromSeconds } from 'Helpers';
 import './style';
 
 export default ({ memberId }) => {
@@ -8,8 +9,6 @@ export default ({ memberId }) => {
 
     const memberTime = times[memberId] || time / members.length;
     const progress = Math.round(100 / time * memberTime) * members.length || 0;
-
-    const formatTimeFromSeconds = s => s < 60 ? `${s} sekund` : `${Math.round(s / 60)} minut`;
 
     const colors = [
         { index: 0, rgb: [255, 0, 0] },
