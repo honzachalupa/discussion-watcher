@@ -123,7 +123,7 @@ const App = () => {
     useEffect(() => state.currentMemberId === null ? timerPause() : timerStart(), [state.currentMemberId]);
     useEffect(() => timerPause(), [state.members]);
 
-    return state.time ? (
+    return (
         <Context.Provider value={{ ...state, timerStart, timerPause, timerStop, addMember, setCurrentMember }}>
             <Router basename={__BASENAME__}>
                 <Switch>
@@ -132,7 +132,7 @@ const App = () => {
                 </Switch>
             </Router>
         </Context.Provider>
-    ) : null;
+    );
 };
 
 render(<App />, document.querySelector('#app'));
