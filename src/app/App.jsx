@@ -11,20 +11,20 @@ import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
 const App = () => {
-    const [isFirstRun, setFirstRun] = useState(true);
     const [timerInterval, setTimerInterval] = useState();
-    const [state, setState] = useState({
-        defaultTime: 3600,
-        currentMemberId: null,
-        isTimerRunning: false
-    });
+    const [defaultTime] = useState(3600);
 
-    const defaultState = {
+    const initialState = {
+        defaultTime,
+        currentMemberId: null,
+        isTimerRunning: false,
         members: [],
         times: {},
-        time: state.defaultTime,
-        timeFormatted: formatTimeFromSeconds(state.defaultTime)
+        time: defaultTime,
+        timeFormatted: formatTimeFromSeconds(defaultTime)
     };
+
+    const [state, setState] = useState(initialState);
 
     const globalFunctions = {
         clearPersistentState,
@@ -36,45 +36,39 @@ const App = () => {
     };
 
     useEffect(() => {
-        console.log('isFirstRun', isFirstRun);
-
-        if (isFirstRun) {
-            setFirstRun(false);
-
-            if (config.caching) {
-                app.initServiceWorker();
-            }
-
-            setState(prevState => {
-                console.log(getPersistentState(), prevState);
-
-                return {
-                    ...getPersistentState(),
-                    ...prevState
-                };
-            });
-
-            window.addEventListener('beforeunload', e => onPageWillUnload(e));
+        if (config.caching) {
+            app.initServiceWorker();
         }
 
         setState(prevState => ({
             ...prevState,
-            timeFormatted: formatTimeFromSeconds(state.time)
+            ...getPersistentState()
+        }));
+    }, []);
+
+    useEffect(() => {
+        setState(prevState => ({
+            ...prevState,
+            timeFormatted: formatTimeFromSeconds(prevState.time)
         }));
 
-        return () => window.removeEventListener('beforeunload', e => onPageWillUnload(e));
-    }, [isFirstRun, state.time]);
-
-    function onPageWillUnload(e) {
-        e.preventDefault();
+        if (state.time === 0) {
+            timerStop();
+        }
 
         setPersistentState();
-    }
+    }, [state.time]);
+
+    useEffect(() => {
+        if (state.currentMemberId === null) {
+            timerPause();
+        } else {
+            timerStart();
+        }
+    }, [state.currentMemberId]);
 
     function getPersistentState() {
-        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state'))
-            ? JSON.parse(localStorage.getItem('state'))
-            : defaultState;
+        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state')) ? JSON.parse(localStorage.getItem('state')) : {};
     }
 
     function setPersistentState() {
@@ -82,9 +76,9 @@ const App = () => {
     }
 
     function clearPersistentState() {
-        setState(defaultState);
+        localStorage.removeItem('state', JSON.stringify(initialState));
 
-        localStorage.setItem('state', JSON.stringify(defaultState));
+        window.location.reload();
     }
 
     function timerStart() {
@@ -121,19 +115,20 @@ const App = () => {
             ...prevState,
             isTimerRunning: false,
             currentMemberId: null,
-            time: defaultState.time,
-            times: defaultState.times
+            time: initialState.time,
+            times: initialState.times
         }));
     }
 
     function tick() {
         setState(prevState => {
-            prevState.times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultState.time / 4) - 1;
+            const times = {};
+            times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultTime / 4) - 1;
 
             return {
                 ...prevState,
                 time: prevState.time - 1,
-                times: prevState.times
+                times
             };
         });
     }
@@ -148,10 +143,8 @@ const App = () => {
     function setCurrentMember(id) {
         setState(prevState => ({
             ...prevState,
-            currentMemberId: state.currentMemberId !== id ? id : null
+            currentMemberId: prevState.currentMemberId !== id ? id : null
         }));
-
-        timerStart();
     }
 
     function formatTimeFromSeconds(s) {

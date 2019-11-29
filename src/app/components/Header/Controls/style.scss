@@ -1,4 +1,12 @@
 [data-component="Controls"] {
+    &.is-disabled {
+        opacity: 0.2;
+
+        & > .button {
+            pointer-events: none;
+        }
+    }
+
     .button {
         width: 70px;
         height: 70px;

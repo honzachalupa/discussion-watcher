@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import cx from 'classnames';
 import { Context } from '@honzachalupa/helpers';
 import PauseIcon from 'Icons/controls-pause';
 import PlayIcon from 'Icons/controls-play';
@@ -6,10 +7,10 @@ import StopIcon from 'Icons/controls-stop';
 import './style';
 
 export default () => {
-    const { timerStart, timerPause, timerStop } = useContext(Context);
+    const { members, timerStart, timerPause, timerStop } = useContext(Context);
 
     return (
-        <div>
+        <div className={cx({ 'is-disabled': members.length < 3 })}>
             <button className="button" onClick={timerPause} type="button">
                 <img className="icon" src={PauseIcon} alt="" />
             </button>

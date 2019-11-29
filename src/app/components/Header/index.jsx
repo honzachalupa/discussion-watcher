@@ -9,7 +9,7 @@ export default () => {
 
     return (
         <header>
-            {members.length > 0 && (
+            {(members && members.length > 0) && (
                 <React.Fragment>
                     <Controls />
                     <InfoBar />
