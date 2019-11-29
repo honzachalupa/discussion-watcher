@@ -107,7 +107,7 @@ const App = () => {
 
     useEffect(() => {
         setState(prevState => {
-            if (state.time === 0) {
+            if (prevState.time === 0) {
                 timerStop();
             }
 
