@@ -158,6 +158,7 @@ module.exports = env => {
                 Components: path.resolve(__dirname, 'src/app/components/'),
                 Layouts: path.resolve(__dirname, 'src/app/layouts/'),
                 Pages: path.resolve(__dirname, 'src/app/pages/'),
+                Helpers: path.resolve(__dirname, 'src/app/helpers.js'),
                 Images: path.resolve(__dirname, 'src/images/'),
                 Icons: path.resolve(__dirname, 'src/images/icons/'),
                 constants: path.resolve(__dirname, 'src/app/constants.js'),

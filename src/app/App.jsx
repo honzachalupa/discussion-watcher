@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
+import { getPersistentState, setPersistentState, formatTimeFromSeconds } from 'Helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
@@ -26,13 +27,70 @@ const App = () => {
 
     const [state, setState] = useState(initialState);
 
-    const globalFunctions = {
-        clearPersistentState,
-        timerStart,
-        timerPause,
-        timerStop,
-        addMember,
-        setCurrentMember
+    const tick = () => {
+        setState(prevState => {
+            const times = {};
+            times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultTime / 4) - 1;
+
+            return {
+                ...prevState,
+                time: prevState.time - 1,
+                times
+            };
+        });
+    };
+
+    const timerStart = () => {
+        if (!state.isTimerRunning) {
+            setState(prevState => ({
+                ...prevState,
+                isTimerRunning: true
+            }));
+
+            tick();
+
+            const timerInterval = setInterval(() => {
+                tick();
+            }, 1000);
+
+            setTimerInterval(timerInterval);
+        }
+    };
+
+    const timerPause = () => {
+        clearInterval(timerInterval);
+
+        setState(prevState => ({
+            ...prevState,
+            isTimerRunning: false,
+            currentMemberId: null
+        }));
+    };
+
+    const timerStop = () => {
+        clearInterval(timerInterval);
+
+        setState(prevState => ({
+            ...prevState,
+            isTimerRunning: false,
+            currentMemberId: null,
+            time: initialState.time,
+            times: initialState.times
+        }));
+    };
+
+    const addMember = member => {
+        setState(prevState => ({
+            ...prevState,
+            members: [...prevState.members, member]
+        }));
+    };
+
+    const setCurrentMember = id => {
+        setState(prevState => ({
+            ...prevState,
+            currentMemberId: prevState.currentMemberId !== id ? id : null
+        }));
     };
 
     useEffect(() => {
@@ -56,7 +114,7 @@ const App = () => {
             timerStop();
         }
 
-        setPersistentState();
+        setPersistentState(state);
     }, [state.time]);
 
     useEffect(() => {
@@ -67,92 +125,8 @@ const App = () => {
         }
     }, [state.currentMemberId]);
 
-    function getPersistentState() {
-        return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state')) ? JSON.parse(localStorage.getItem('state')) : {};
-    }
-
-    function setPersistentState() {
-        localStorage.setItem('state', JSON.stringify(state));
-    }
-
-    function clearPersistentState() {
-        localStorage.removeItem('state', JSON.stringify(initialState));
-
-        window.location.reload();
-    }
-
-    function timerStart() {
-        if (!state.isTimerRunning) {
-            setState(prevState => ({
-                ...prevState,
-                isTimerRunning: true
-            }));
-
-            tick();
-
-            const timerInterval = setInterval(() => {
-                tick();
-            }, 1000);
-
-            setTimerInterval(timerInterval);
-        }
-    }
-
-    function timerPause() {
-        clearInterval(timerInterval);
-
-        setState(prevState => ({
-            ...prevState,
-            isTimerRunning: false,
-            currentMemberId: null
-        }));
-    }
-
-    function timerStop() {
-        clearInterval(timerInterval);
-
-        setState(prevState => ({
-            ...prevState,
-            isTimerRunning: false,
-            currentMemberId: null,
-            time: initialState.time,
-            times: initialState.times
-        }));
-    }
-
-    function tick() {
-        setState(prevState => {
-            const times = {};
-            times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultTime / 4) - 1;
-
-            return {
-                ...prevState,
-                time: prevState.time - 1,
-                times
-            };
-        });
-    }
-
-    function addMember(member) {
-        setState(prevState => ({
-            ...prevState,
-            members: [...prevState.members, member]
-        }));
-    }
-
-    function setCurrentMember(id) {
-        setState(prevState => ({
-            ...prevState,
-            currentMemberId: prevState.currentMemberId !== id ? id : null
-        }));
-    }
-
-    function formatTimeFromSeconds(s) {
-        return s < 60 ? `${s} sekund` : `${Math.round(s / 60)} minut`;
-    }
-
     return state.time ? (
-        <Context.Provider value={{ ...state, ...globalFunctions }}>
+        <Context.Provider value={{ ...state, timerStart, timerPause, timerStop, addMember, setCurrentMember }}>
             <Router basename={__BASENAME__}>
                 <Switch>
                     <Route component={Page_Home} path="/" exact />
