@@ -22,7 +22,8 @@ const App = () => {
         members: [],
         times: {},
         time: defaultTime,
-        timeFormatted: formatTimeFromSeconds(defaultTime)
+        timeFormatted: formatTimeFromSeconds(defaultTime),
+        maxMembersCount: 8
     };
 
     const [state, setState] = useState(initialState);
@@ -117,13 +118,8 @@ const App = () => {
         setPersistentState(state);
     }, [state.time]);
 
-    useEffect(() => {
-        if (state.currentMemberId === null) {
-            timerPause();
-        } else {
-            timerStart();
-        }
-    }, [state.currentMemberId]);
+    useEffect(() => state.currentMemberId === null ? timerPause() : timerStart(), [state.currentMemberId]);
+    useEffect(() => timerPause(), [state.members]);
 
     return state.time ? (
         <Context.Provider value={{ ...state, timerStart, timerPause, timerStop, addMember, setCurrentMember }}>

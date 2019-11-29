@@ -8,7 +8,7 @@ import AddMemberIcon from 'Icons/plus';
 import TimeBar from './TimeBar';
 
 export default ({ type, member }) => {
-    const { members, setCurrentMember, currentMemberId, isTimerRunning, timerPause, addMember } = useContext(Context);
+    const { members, setCurrentMember, currentMemberId, isTimerRunning, addMember } = useContext(Context);
 
     const SEX_MALE = 'MALE';
     const SEX_FEMALE = 'FEMALE';
@@ -25,12 +25,6 @@ export default ({ type, member }) => {
         };
     };
 
-    const handleAddMember = () => {
-        timerPause();
-
-        addMember(getDefaultMember());
-    };
-
     return type === 'member' ? (
         <div className={cx('item', 'member', { selected: member.id === currentMemberId })} onClick={() => setCurrentMember(member.id)} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }} />
@@ -40,7 +34,7 @@ export default ({ type, member }) => {
             <p className="label">{member.name}</p>
         </div>
     ) : (
-        <div className="item add-new" onClick={handleAddMember} type="button" data-component="MembersList_Item">
+        <div className="item add-new" onClick={() => addMember(getDefaultMember())} type="button" data-component="MembersList_Item">
             <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
 
             <p className="label">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>

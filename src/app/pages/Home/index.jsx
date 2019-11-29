@@ -3,11 +3,9 @@ import Layout from 'Layouts/Main';
 import Header from 'Components/Header';
 import MembersList from 'Components/MembersList';
 
-export default () => {
-    return (
-        <Layout>
-            <Header />
-            <MembersList />
-        </Layout>
-    );
-};
+export default () => (
+    <Layout>
+        <Header />
+        <MembersList />
+    </Layout>
+);

@@ -4,18 +4,16 @@ import './style';
 import Item from './Item';
 
 export default () => {
-    const { members } = useContext(Context);
-
-    const MAX_MEMBERS_COUNT = 8;
+    const { members, maxMembersCount } = useContext(Context);
 
     return (
         <section>
             <div className="list">
-                {members.length > 0 && members.map(member => (
+                {members.map(member => (
                     <Item key={member.id} type="member" member={member} />
                 ))}
 
-                {members.length < MAX_MEMBERS_COUNT && (
+                {members.length < maxMembersCount && (
                     <Item type="add-new" />
                 )}
             </div>
