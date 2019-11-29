@@ -4,40 +4,31 @@ import { Context } from '@honzachalupa/helpers';
 import './style';
 import MemberMaleIcon from 'Icons/person-male';
 import MemberFemaleIcon from 'Icons/person-female';
-import AddMemberIcon from 'Icons/plus';
 import TimeBar from './TimeBar';
 
-export default ({ type, member }) => {
-    const { members, setCurrentMember, currentMemberId, isTimerRunning, addMember } = useContext(Context);
+export default ({ member }) => {
+    const { times, currentMemberId, Members } = useContext(Context);
 
     const SEX_MALE = 'MALE';
-    const SEX_FEMALE = 'FEMALE';
 
-    const getNewId = () => members.length + 1; // To-do: Add more logic.
+    const hasNoTimeLeft = times[member.id] === -1;
 
-    const getDefaultMember = () => {
-        const id = getNewId();
-
-        return {
-            id,
-            name: `Nový člen ${id}`,
-            sex: Math.round(Math.random() * 10) % 2 === 0 ? SEX_MALE : SEX_FEMALE
-        };
-    };
-
-    return type === 'member' ? (
-        <div className={cx('item', 'member', { selected: member.id === currentMemberId })} onClick={() => setCurrentMember(member.id)} type="button" data-component="MembersList_Item">
+    return (
+        <div
+            className={cx('item', 'member', { selected: member.id === currentMemberId, 'has-no-time-left': hasNoTimeLeft })}
+            onClick={!hasNoTimeLeft ? () => Members.setCurrent(member.id) : () => {}}
+            type="button"
+            data-component="MembersList_Item"
+        >
             <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }} />
 
-            <TimeBar memberId={member.id} />
+            {!hasNoTimeLeft ? (
+                <TimeBar memberId={member.id} />
+            ) : (
+                <p className="label">Čas vypršel</p>
+            )}
 
             <p className="label">{member.name}</p>
-        </div>
-    ) : (
-        <div className="item add-new" onClick={() => addMember(getDefaultMember())} type="button" data-component="MembersList_Item">
-            <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
-
-            <p className="label">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>
         </div>
     );
 };

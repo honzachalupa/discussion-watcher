@@ -12,14 +12,16 @@ import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
 const App = () => {
+    const defaultTime = 600; // To-do: Change 3600 s.
+
     const [timerInterval, setTimerInterval] = useState();
-    const [defaultTime] = useState(3600);
 
     const initialState = {
         defaultTime,
         currentMemberId: null,
         isTimerRunning: false,
         members: [],
+        activeMembersCount: 0,
         times: {},
         time: defaultTime,
         timeFormatted: formatTimeFromSeconds(defaultTime),
@@ -30,7 +32,8 @@ const App = () => {
 
     const tick = () => {
         setState(prevState => {
-            const times = {};
+            const times = { ...prevState.times };
+
             times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultTime / 4) - 1;
 
             return {
@@ -50,11 +53,11 @@ const App = () => {
 
             tick();
 
-            const timerInterval = setInterval(() => {
-                tick();
-            }, 1000);
-
-            setTimerInterval(timerInterval);
+            setTimerInterval(
+                setInterval(() => {
+                    tick();
+                }, 100) // To-do: Change to 1000 ms.
+            );
         }
     };
 
@@ -69,12 +72,10 @@ const App = () => {
     };
 
     const timerStop = () => {
-        clearInterval(timerInterval);
+        timerPause();
 
         setState(prevState => ({
             ...prevState,
-            isTimerRunning: false,
-            currentMemberId: null,
             time: initialState.time,
             times: initialState.times
         }));
@@ -107,13 +108,23 @@ const App = () => {
 
     useEffect(() => {
         setState(prevState => {
-            if (prevState.time === 0) {
+            const { members, time, times, currentMemberId } = prevState;
+
+            if (time === 0) {
                 timerStop();
+            }
+
+            if (times[currentMemberId] === 0) {
+                timerPause();
+
+                times[currentMemberId] = -1;
             }
 
             return {
                 ...prevState,
-                timeFormatted: formatTimeFromSeconds(prevState.time)
+                times,
+                timeFormatted: formatTimeFromSeconds(time),
+                activeMembersCount: members.length - Object.keys(times).filter(id => times[id] === -1).length
             };
         });
 
@@ -123,8 +134,20 @@ const App = () => {
     useEffect(() => state.currentMemberId === null ? timerPause() : timerStart(), [state.currentMemberId]);
     useEffect(() => timerPause(), [state.members]);
 
+    const globalFunctions = {
+        Timer: {
+            start: timerStart,
+            pause: timerPause,
+            stop: timerStop
+        },
+        Members: {
+            add: addMember,
+            setCurrent: setCurrentMember
+        }
+    };
+
     return (
-        <Context.Provider value={{ ...state, timerStart, timerPause, timerStop, addMember, setCurrentMember }}>
+        <Context.Provider value={{ ...state, ...globalFunctions }}>
             <Router basename={__BASENAME__}>
                 <Switch>
                     <Route component={Page_Home} path="/" exact />

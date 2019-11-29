@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Context } from '@honzachalupa/helpers';
 import './style';
 import Item from './Item';
+import AddNewButton from './AddNewButton';
 
 export default () => {
     const { members, maxMembersCount } = useContext(Context);
@@ -10,11 +11,11 @@ export default () => {
         <section>
             <div className="list">
                 {members.map(member => (
-                    <Item key={member.id} type="member" member={member} />
+                    <Item key={member.id} member={member} />
                 ))}
 
                 {members.length < maxMembersCount && (
-                    <Item type="add-new" />
+                    <AddNewButton />
                 )}
             </div>
         </section>

@@ -13,5 +13,8 @@ export const clearPersistentState = initialState => {
 };
 
 export const formatTimeFromSeconds = s => {
-    return s < 60 ? `${s} sekund` : `${Math.round(s / 60)} minut`;
+    const minutes = Math.floor(s / 60);
+    const seconds = s % 60;
+
+    return s < 60 ? `${s} sekund` : `${minutes} minut ${seconds} sekund`;
 };

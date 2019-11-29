@@ -2,25 +2,20 @@ import React, { useState, useContext } from 'react';
 import cx from 'classnames';
 import { Context } from '@honzachalupa/helpers';
 import PauseIcon from 'Icons/controls-pause';
-import PlayIcon from 'Icons/controls-play';
 import StopIcon from 'Icons/controls-stop';
 import './style';
 
 export default () => {
-    const { members, timerStart, timerPause, timerStop } = useContext(Context);
+    const { members, Timer } = useContext(Context);
 
     const [buttons] = useState([{
         id: 'pause',
         icon: PauseIcon,
-        onClick: timerPause
-    }, {
-        id: 'start',
-        icon: PlayIcon,
-        onClick: timerStart
+        onClick: Timer.pause
     }, {
         id: 'stop',
         icon: StopIcon,
-        onClick: timerStop
+        onClick: Timer.stop
     }]);
 
     return (

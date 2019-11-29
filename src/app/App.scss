@@ -29,4 +29,10 @@ body {
             }
         }
     }
+
+    /* stylelint-disable media-feature-name-no-unknown */
+    @media (prefers-color-scheme: dark) {
+        background-color: black;
+        color: white;
+    }
 }

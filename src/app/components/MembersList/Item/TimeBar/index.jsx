@@ -5,15 +5,15 @@ import { formatTimeFromSeconds } from 'Helpers';
 import './style';
 
 export default ({ memberId }) => {
-    const { members, time, times } = useContext(Context);
+    const { activeMembersCount, defaultTime, times } = useContext(Context);
 
-    const memberTime = times[memberId] || time / members.length;
-    const progress = Math.round(100 / time * memberTime) * members.length || 0;
+    const memberTime = times[memberId] !== undefined ? times[memberId] : defaultTime / activeMembersCount;
+    const progress = Math.min(Math.round(100 / (defaultTime / activeMembersCount) * memberTime), 100);
 
     const colors = [
         { index: 0, rgb: [255, 0, 0] },
-        { index: 25, rgb: [255, 165, 0] },
-        { index: 50, rgb: [0, 255, 0] }
+        { index: 50, rgb: [255, 165, 0] },
+        { index: 100, rgb: [0, 255, 0] }
     ];
 
     const color = colormap({
@@ -21,11 +21,11 @@ export default ({ memberId }) => {
         nshades: colors.length
     })[progress];
 
-    return memberTime ? (
+    return (
         <div>
             <div className="color-container" style={{ width: `${progress}%`, backgroundColor: color }} />
 
             <p className="label">{formatTimeFromSeconds(memberTime)}</p>
         </div>
-    ) : null;
+    );
 };
