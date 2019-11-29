@@ -106,16 +106,18 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        setState(prevState => ({
-            ...prevState,
-            timeFormatted: formatTimeFromSeconds(prevState.time)
-        }));
+        setState(prevState => {
+            if (state.time === 0) {
+                timerStop();
+            }
 
-        if (state.time === 0) {
-            timerStop();
-        }
+            return {
+                ...prevState,
+                timeFormatted: formatTimeFromSeconds(prevState.time)
+            };
+        });
 
-        setPersistentState(state);
+        setTimeout(() => setPersistentState(state), 500);
     }, [state.time]);
 
     useEffect(() => state.currentMemberId === null ? timerPause() : timerStart(), [state.currentMemberId]);
