@@ -18,6 +18,10 @@
         background-position: center;
         background-size: 120%;
         background-repeat: no-repeat;
+
+        .sex-change-button {
+            float: right;
+        }
     }
 
     .label {
@@ -40,6 +44,13 @@
         &.has-no-time-left {
             opacity: 0.5;
             pointer-events: none;
+        }
+
+        .name {
+            width: 100%;
+            background-color: transparent;
+            text-align: center;
+            border: none;
         }
     }
 

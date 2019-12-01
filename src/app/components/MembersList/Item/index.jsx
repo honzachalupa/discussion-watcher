@@ -20,7 +20,11 @@ export default ({ member }) => {
             type="button"
             data-component="MembersList_Item"
         >
-            <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }} />
+            <div className="icon" style={{ backgroundImage: `url(${member.sex === SEX_MALE ? MemberMaleIcon : MemberFemaleIcon})` }}>
+                {!hasNoTimeLeft && (
+                    <div className="sex-change-button" onClick={e => { e.stopPropagation(); Members.toggleSex(member.id); }} type="button">O</div>
+                )}
+            </div>
 
             {!hasNoTimeLeft ? (
                 <TimeBar memberId={member.id} />
@@ -28,7 +32,7 @@ export default ({ member }) => {
                 <p className="label">Čas vypršel</p>
             )}
 
-            <p className="label">{member.name}</p>
+            <input className="name" type="text" defaultValue={member.name} onClick={e => e.stopPropagation()} onChange={e => Members.setName(member.id, e.target.value)} />
         </div>
     );
 };

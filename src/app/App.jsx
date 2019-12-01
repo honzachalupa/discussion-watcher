@@ -88,6 +88,36 @@ const App = () => {
         }));
     };
 
+    const setMemberName = (memberId, name) => {
+        setState(prevState => ({
+            ...prevState,
+            members: prevState.members.map(member => {
+                if (member.id === memberId) {
+                    member.name = name;
+
+                    return member;
+                } else {
+                    return member;
+                }
+            })
+        }));
+    };
+
+    const toggleMemberSex = memberId => {
+        setState(prevState => ({
+            ...prevState,
+            members: prevState.members.map(member => {
+                if (member.id === memberId) {
+                    member.sex = member.sex === 'MALE' ? 'FEMALE' : 'MALE';
+
+                    return member;
+                } else {
+                    return member;
+                }
+            })
+        }));
+    };
+
     const setCurrentMember = id => {
         setState(prevState => ({
             ...prevState,
@@ -129,7 +159,7 @@ const App = () => {
         });
 
         setTimeout(() => setPersistentState(state), 500);
-    }, [state.time]);
+    }, [state.time, state.members]);
 
     useEffect(() => state.currentMemberId === null ? timerPause() : timerStart(), [state.currentMemberId]);
     useEffect(() => timerPause(), [state.members]);
@@ -142,6 +172,8 @@ const App = () => {
         },
         Members: {
             add: addMember,
+            setName: setMemberName,
+            toggleSex: toggleMemberSex,
             setCurrent: setCurrentMember
         }
     };

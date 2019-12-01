@@ -7,7 +7,6 @@ export default () => {
     const { members, isTimerRunning, Members } = useContext(Context);
 
     const SEX_MALE = 'MALE';
-    const SEX_FEMALE = 'FEMALE';
 
     const getNewId = () => members.length + 1; // To-do: Add more logic.
 
@@ -17,7 +16,7 @@ export default () => {
         return {
             id,
             name: `Nový člen ${id}`,
-            sex: Math.round(Math.random() * 10) % 2 === 0 ? SEX_MALE : SEX_FEMALE
+            sex: SEX_MALE
         };
     };
 
