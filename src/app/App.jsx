@@ -12,6 +12,7 @@ import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
 const App = () => {
+    const SEX_MALE = 'MALE';
     const defaultTime = 600; // To-do: Change 3600 s.
 
     const [timerInterval, setTimerInterval] = useState();
@@ -101,10 +102,31 @@ const App = () => {
         }));
     };
 
-    const addMember = member => {
+    const getNewMemberId = () => {
+        const existingIDs = stateRef.current.members.map(member => member.id);
+        const id = Math.round(Math.random() * 1000000);
+
+        if (!existingIDs.includes(id)) {
+            return id;
+        } else {
+            return getNewMemberId();
+        }
+    };
+
+    const getDefaultMember = () => {
+        const id = getNewMemberId();
+
+        return {
+            id,
+            name: `Člen ${id}`,
+            sex: SEX_MALE
+        };
+    };
+
+    const addMember = () => {
         setState(prevState => ({
             ...prevState,
-            members: [...prevState.members, member]
+            members: [...prevState.members, getDefaultMember()]
         }));
     };
 

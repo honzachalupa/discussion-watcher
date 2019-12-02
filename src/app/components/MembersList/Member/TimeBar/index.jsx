@@ -7,12 +7,9 @@ import './style';
 export default ({ memberId }) => {
     const { activeMembersCount, defaultTime, times } = useContext(Context);
 
-    const memberTime = Math.min(
-        times[memberId] !== undefined
-            ? defaultTime / activeMembersCount - times[memberId]
-            : defaultTime / activeMembersCount,
-        defaultTime / activeMembersCount
-    );
+    const memberTime = times[memberId] !== undefined
+        ? defaultTime / activeMembersCount - times[memberId]
+        : defaultTime / activeMembersCount;
 
     const progress = Math.round(100 / (defaultTime / activeMembersCount) * memberTime) || 0;
 

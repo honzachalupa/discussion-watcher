@@ -27,19 +27,19 @@ export default ({ id, name, sex }) => {
             {!hasNoTimeLeft ? (
                 <TimeBar memberId={id} />
             ) : (
-                <p className="label">Čas vypršel</p>
+                <p className="label">Čas vypršel.</p>
             )}
 
             <input className="name" type="text" defaultValue={name} onClick={e => e.stopPropagation()} onChange={e => Members.setName(id, e.target.value)} />
 
             {!hasNoTimeLeft && (
                 <div className="actions">
-                    <button className="sex-change-button" onClick={e => { e.stopPropagation(); Members.toggleSex(id); }} type="button">
+                    <button onClick={() => Members.toggleSex(id)} type="button">
                         <img className="icon" src={ChangeSexIcon} alt="" />
                         <span className="label">Změnit pohlaví</span>
                     </button>
 
-                    <button className="remove-button" onClick={() => Members.remove(id)} type="button">
+                    <button onClick={() => Members.remove(id)} type="button">
                         <img className="icon" src={RemoveIcon} alt="" />
                         <span className="label">Odebat člena</span>
                     </button>

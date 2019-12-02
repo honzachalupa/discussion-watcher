@@ -1,4 +1,5 @@
 @import 'css-reset-and-normalize-sass/scss/flavored-reset-and-normalize';
+@import url('https://fonts.googleapis.com/css?family=Oxygen&display=swap');
 
 $background-color: #fff;
 
@@ -31,6 +32,8 @@ body {
     }
 
     * {
+        font-family: 'Oxygen', sans-serif;
+        letter-spacing: 1px;
         transition: all 200ms;
     }
 
