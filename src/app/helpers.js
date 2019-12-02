@@ -55,3 +55,13 @@ export const getDefaultMember = () => {
         sex: SEX_MALE
     };
 };
+
+export const sumObjectProperty = (object, property) => {
+    let sum = 0;
+
+    Object.keys(object).forEach(key => {
+        sum += property ? object[key][property] : object[key];
+    });
+
+    return sum;
+};

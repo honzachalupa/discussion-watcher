@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import cx from 'classnames';
 import { Context } from '@honzachalupa/helpers';
+import { sumObjectProperty } from 'Helpers';
 import './style';
 import MemberMaleIcon from 'Icons/person-male';
 import MemberFemaleIcon from 'Icons/person-female';
@@ -13,7 +14,8 @@ export default ({ id, name, sex }) => {
 
     const SEX_MALE = 'MALE';
 
-    const hasNoTimeLeft = times[id] >= defaultTime / activeMembersCount;
+    const timesSum = sumObjectProperty(times);
+    const hasNoTimeLeft = timesSum === defaultTime || times[id] >= defaultTime / Math.max(activeMembersCount, 1);
 
     return (
         <div className={cx({ selected: id === currentMemberId, 'has-no-time-left': hasNoTimeLeft })} data-component="Member">

@@ -8,10 +8,11 @@ export default ({ memberId }) => {
     const { activeMembersCount, defaultTime, times } = useContext(Context);
 
     const memberTime = times[memberId] !== undefined
-        ? defaultTime / activeMembersCount - times[memberId]
-        : defaultTime / activeMembersCount;
+        ? defaultTime / Math.max(activeMembersCount, 1) - times[memberId]
+        : defaultTime / Math.max(activeMembersCount, 1)
+    || 0;
 
-    const progress = Math.round(100 / (defaultTime / activeMembersCount) * memberTime) || 0;
+    const progress = Math.min(Math.round(100 / (defaultTime / Math.max(activeMembersCount, 1)) * memberTime), 100);
 
     const colors = [
         { index: 0, rgb: [255, 0, 0] },

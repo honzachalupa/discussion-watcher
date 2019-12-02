@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
-import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember } from 'Helpers';
+import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember, sumObjectProperty } from 'Helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
@@ -21,7 +21,7 @@ const App = () => {
         currentMemberId: null,
         isTimerRunning: false,
         members: [],
-        activeMembersCount: 1,
+        activeMembersCount: 0,
         times: {},
         time: 0,
         timeFormatted: formatTimeFromSeconds(defaultTime),
@@ -75,7 +75,7 @@ const App = () => {
             setTimerInterval(
                 setInterval(() => {
                     tick();
-                }, 50) // To-do: Change to 1000 ms.
+                }, 500) // To-do: Change to 1000 ms.
             );
         }
     };
@@ -102,10 +102,31 @@ const App = () => {
     };
 
     const addMember = () => {
-        setState(prevState => ({
-            ...prevState,
-            members: [...prevState.members, getDefaultMember(prevState.members)]
-        }));
+        setState(prevState => {
+            const { time, members, times, activeMembersCount } = prevState;
+            const timesClone = { ...times };
+            const member = getDefaultMember(members);
+
+            if (time > 0) {
+                const timesSum = sumObjectProperty(times);
+                const timeForMember = Math.round(timesSum / (Math.max(activeMembersCount, 1) + 1));
+                const timeDifferencePerMember = timeForMember / Math.max(activeMembersCount, 1);
+
+                Object.keys(timesClone).forEach(key => {
+                    timesClone[key] += timeDifferencePerMember;
+                });
+
+                timesClone[member.id] = timeForMember;
+            } else {
+                timesClone[member.id] = 0;
+            }
+
+            return {
+                ...prevState,
+                members: [...members, member],
+                times: timesClone
+            };
+        });
     };
 
     const removeMember = id => {
@@ -172,7 +193,7 @@ const App = () => {
         setState(prevState => {
             const { members, time, defaultTime, times, currentMemberId, activeMembersCount } = prevState;
 
-            if (time === defaultTime || times[currentMemberId] === defaultTime / activeMembersCount) {
+            if (time === defaultTime || times[currentMemberId] >= defaultTime / Math.max(activeMembersCount, 1)) {
                 timerPause();
             }
 
@@ -180,7 +201,7 @@ const App = () => {
                 ...prevState,
                 times,
                 timeFormatted: formatTimeFromSeconds(defaultTime - time),
-                activeMembersCount: members.length - Object.keys(times).filter(id => times[id] === 0).length
+                activeMembersCount: members.length // - Object.keys(times).filter(id => times[id] === 0).length
             };
         });
 
