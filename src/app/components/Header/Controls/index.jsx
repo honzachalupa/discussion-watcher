@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import cx from 'classnames';
 import { Context } from '@honzachalupa/helpers';
 import PauseIcon from 'Icons/controls-pause';
@@ -6,22 +6,22 @@ import StopIcon from 'Icons/controls-stop';
 import './style';
 
 export default () => {
-    const { activeMembersCount, Timer } = useContext(Context);
+    const { activeMembersCount, isTimerRunning, Timer } = useContext(Context);
 
-    const [buttons] = useState([{
-        id: 'pause',
+    const buttons = [{
         icon: PauseIcon,
-        onClick: Timer.pause
+        onClick: Timer.pause,
+        isDisabled: !isTimerRunning || activeMembersCount === 0
     }, {
-        id: 'stop',
         icon: StopIcon,
-        onClick: Timer.stop
-    }]);
+        onClick: Timer.stop,
+        isDisabled: activeMembersCount === 0
+    }];
 
     return (
-        <div className={cx({ 'is-disabled': activeMembersCount === 0 })}>
+        <div>
             {buttons.map(button => (
-                <button key={button.id} className="button" onClick={button.onClick} type="button">
+                <button key={button.icon} className={cx('button', { 'is-disabled': button.isDisabled })} onClick={button.onClick} type="button">
                     <img className="icon" src={button.icon} alt="" />
                 </button>
             ))}

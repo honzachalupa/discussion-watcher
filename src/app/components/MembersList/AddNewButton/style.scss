@@ -14,15 +14,17 @@
     }
 
     .icon {
-        width: 80%;
-        height: 8vw;
+        width: 5vw;
+        height: 5vw;
         background-position: center;
         background-size: 120%;
         background-repeat: no-repeat;
     }
 
     .label {
-        font-size: 18px;
+        height: 50px;
+        font-size: 16px;
         font-weight: 100;
+        margin-top: 20px;
     }
 }
