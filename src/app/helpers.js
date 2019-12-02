@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
+const SEX_MALE = 'MALE';
+
 export const useRefState = initialValue => {
     const [state, setState] = useState(initialValue);
     const stateRef = useRef(state);
@@ -31,4 +33,25 @@ export const formatTimeFromSeconds = s => {
     const seconds = Math.round(s % 60);
 
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+};
+
+export const getNewMemberId = members => {
+    const existingIDs = members ? members.map(member => member.id) : [];
+    const id = Math.round(Math.random() * 1000000);
+
+    if (!existingIDs.includes(id)) {
+        return id;
+    } else {
+        return getNewMemberId();
+    }
+};
+
+export const getDefaultMember = () => {
+    const id = getNewMemberId();
+
+    return {
+        id,
+        name: `Člen ${id}`,
+        sex: SEX_MALE
+    };
 };

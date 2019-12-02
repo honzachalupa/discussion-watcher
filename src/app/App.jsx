@@ -5,14 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
-import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds } from 'Helpers';
+import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember } from 'Helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
 const App = () => {
-    const SEX_MALE = 'MALE';
     const defaultTime = 600; // To-do: Change 3600 s.
 
     const [timerInterval, setTimerInterval] = useState();
@@ -102,31 +101,10 @@ const App = () => {
         }));
     };
 
-    const getNewMemberId = () => {
-        const existingIDs = stateRef.current.members.map(member => member.id);
-        const id = Math.round(Math.random() * 1000000);
-
-        if (!existingIDs.includes(id)) {
-            return id;
-        } else {
-            return getNewMemberId();
-        }
-    };
-
-    const getDefaultMember = () => {
-        const id = getNewMemberId();
-
-        return {
-            id,
-            name: `Člen ${id}`,
-            sex: SEX_MALE
-        };
-    };
-
     const addMember = () => {
         setState(prevState => ({
             ...prevState,
-            members: [...prevState.members, getDefaultMember()]
+            members: [...prevState.members, getDefaultMember(prevState.members)]
         }));
     };
 
