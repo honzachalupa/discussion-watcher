@@ -1,3 +1,17 @@
+import { useState, useEffect, useRef } from 'react';
+
+export const useRefState = initialValue => {
+    const [state, setState] = useState(initialValue);
+    const stateRef = useRef(state);
+
+    useEffect(
+        () => { stateRef.current = state; },
+        [state]
+    );
+
+    return [state, stateRef, setState];
+};
+
 export const getPersistentState = () => {
     return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state')) ? JSON.parse(localStorage.getItem('state')) : {};
 };
@@ -14,7 +28,7 @@ export const clearPersistentState = initialState => {
 
 export const formatTimeFromSeconds = s => {
     const minutes = Math.floor(s / 60);
-    const seconds = s % 60;
+    const seconds = Math.round(s % 60);
 
-    return s < 60 ? `${s} sekund` : `${minutes} minut ${seconds} sekund`;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
 };

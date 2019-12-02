@@ -4,13 +4,15 @@ import Controls from './Controls';
 import InfoBar from './InfoBar';
 import './style';
 
-export default () => (
-    <header>
-        {useContext(Context).members.length > 0 && (
-            <React.Fragment>
-                <Controls />
-                <InfoBar />
-            </React.Fragment>
-        )}
-    </header>
-);
+export default () => {
+    return (
+        <header>
+            {useContext(Context).members.length > 0 && (
+                <React.Fragment>
+                    <Controls />
+                    <InfoBar />
+                </React.Fragment>
+            )}
+        </header>
+    );
+};

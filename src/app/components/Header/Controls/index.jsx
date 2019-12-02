@@ -6,7 +6,7 @@ import StopIcon from 'Icons/controls-stop';
 import './style';
 
 export default () => {
-    const { members, Timer } = useContext(Context);
+    const { activeMembersCount, Timer } = useContext(Context);
 
     const [buttons] = useState([{
         id: 'pause',
@@ -19,7 +19,7 @@ export default () => {
     }]);
 
     return (
-        <div className={cx({ 'is-disabled': members.length < 3 })}>
+        <div className={cx({ 'is-disabled': activeMembersCount === 0 })}>
             {buttons.map(button => (
                 <button key={button.id} className="button" onClick={button.onClick} type="button">
                     <img className="icon" src={button.icon} alt="" />

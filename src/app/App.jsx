@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
-import { getPersistentState, setPersistentState, formatTimeFromSeconds } from 'Helpers';
+import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds } from 'Helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
@@ -21,24 +21,43 @@ const App = () => {
         currentMemberId: null,
         isTimerRunning: false,
         members: [],
-        activeMembersCount: 0,
+        activeMembersCount: 1,
         times: {},
-        time: defaultTime,
+        time: 0,
         timeFormatted: formatTimeFromSeconds(defaultTime),
         maxMembersCount: 8
     };
 
-    const [state, setState] = useState(initialState);
+    const [state, stateRef, setState] = useRefState(initialState);
+
+    const saveDiscussion = () => {
+        let discussionsHistory = [];
+        const discussionsHistoryNode = localStorage.getItem('discussionsHistory');
+
+        if (discussionsHistoryNode) {
+            discussionsHistory = JSON.parse(discussionsHistoryNode);
+        }
+
+        discussionsHistory.push({
+            id: Date.now(),
+            data: stateRef.current.members.map(member => ({
+                name: member.name,
+                time: stateRef.current.times[member.id]
+            }))
+        });
+
+        localStorage.setItem('discussionsHistory', JSON.stringify(discussionsHistory));
+    };
 
     const tick = () => {
         setState(prevState => {
             const times = { ...prevState.times };
 
-            times[prevState.currentMemberId] = (prevState.times[prevState.currentMemberId] || defaultTime / 4) - 1;
+            times[prevState.currentMemberId] = (times[prevState.currentMemberId] || 0) + 1;
 
             return {
                 ...prevState,
-                time: prevState.time - 1,
+                time: prevState.time + 1,
                 times
             };
         });
@@ -56,7 +75,7 @@ const App = () => {
             setTimerInterval(
                 setInterval(() => {
                     tick();
-                }, 100) // To-do: Change to 1000 ms.
+                }, 50) // To-do: Change to 1000 ms.
             );
         }
     };
@@ -73,6 +92,7 @@ const App = () => {
 
     const timerStop = () => {
         timerPause();
+        saveDiscussion();
 
         setState(prevState => ({
             ...prevState,
@@ -85,6 +105,18 @@ const App = () => {
         setState(prevState => ({
             ...prevState,
             members: [...prevState.members, member]
+        }));
+    };
+
+    const removeMember = id => {
+        const times = { ...stateRef.current.times };
+
+        delete times[id];
+
+        setState(prevState => ({
+            ...prevState,
+            members: [...prevState.members].filter(member => member.id !== id),
+            times
         }));
     };
 
@@ -119,9 +151,9 @@ const App = () => {
     };
 
     const setCurrentMember = id => {
-        setState(prevState => ({
-            ...prevState,
-            currentMemberId: prevState.currentMemberId !== id ? id : null
+        setState(({ currentMemberId, ...rest }) => ({
+            ...rest,
+            currentMemberId: currentMemberId !== id ? id : null
         }));
     };
 
@@ -138,23 +170,17 @@ const App = () => {
 
     useEffect(() => {
         setState(prevState => {
-            const { members, time, times, currentMemberId } = prevState;
+            const { members, time, defaultTime, times, currentMemberId, activeMembersCount } = prevState;
 
-            if (time === 0) {
-                timerStop();
-            }
-
-            if (times[currentMemberId] === 0) {
+            if (time === defaultTime || times[currentMemberId] === defaultTime / activeMembersCount) {
                 timerPause();
-
-                times[currentMemberId] = -1;
             }
 
             return {
                 ...prevState,
                 times,
-                timeFormatted: formatTimeFromSeconds(time),
-                activeMembersCount: members.length - Object.keys(times).filter(id => times[id] === -1).length
+                timeFormatted: formatTimeFromSeconds(defaultTime - time),
+                activeMembersCount: members.length - Object.keys(times).filter(id => times[id] === 0).length
             };
         });
 
@@ -172,9 +198,13 @@ const App = () => {
         },
         Members: {
             add: addMember,
+            remove: removeMember,
             setName: setMemberName,
             toggleSex: toggleMemberSex,
             setCurrent: setCurrentMember
+        },
+        Discussion: {
+            save: saveDiscussion
         }
     };
 

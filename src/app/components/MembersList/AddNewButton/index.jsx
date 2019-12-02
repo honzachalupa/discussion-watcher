@@ -8,23 +8,28 @@ export default () => {
 
     const SEX_MALE = 'MALE';
 
-    const getNewId = () => members.length + 1; // To-do: Add more logic.
+    const getNewId = () => {
+        const existingIDs = members.map(member => member.id);
+        const id = Math.round(Math.random() * 1000000);
 
-    const getDefaultMember = () => {
-        const id = getNewId();
-
-        return {
-            id,
-            name: `Nový člen ${id}`,
-            sex: SEX_MALE
-        };
+        if (!existingIDs.includes(id)) {
+            return id;
+        } else {
+            return getNewId();
+        }
     };
 
+    const getDefaultMember = () => ({
+        id: getNewId(),
+        name: 'Člen beze jména',
+        sex: SEX_MALE
+    });
+
     return (
-        <div className="item add-new" onClick={() => Members.add(getDefaultMember())} type="button" data-component="MembersList_Item">
+        <button onClick={() => Members.add(getDefaultMember())} type="button" data-component="AddNewButton">
             <div className="icon" style={{ backgroundImage: `url(${AddMemberIcon})` }} />
 
             <p className="label">{isTimerRunning ? 'Pozastavit diskuzi a přidat člena' : 'Přidat člena'}</p>
-        </div>
+        </button>
     );
 };

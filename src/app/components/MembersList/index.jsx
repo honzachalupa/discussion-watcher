@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Context } from '@honzachalupa/helpers';
 import './style';
-import Item from './Item';
+import Member from './Member';
 import AddNewButton from './AddNewButton';
 
 export default () => {
@@ -11,7 +11,7 @@ export default () => {
         <section>
             <div className="list">
                 {members.map(member => (
-                    <Item key={member.id} member={member} />
+                    <Member key={member.id} {...member} />
                 ))}
 
                 {members.length < maxMembersCount && (
