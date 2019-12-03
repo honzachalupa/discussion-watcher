@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-
-const SEX_MALE = 'MALE';
+import { SEX_MALE, SAVED_STATE_KEY } from 'Enumerator';
 
 export const useRefState = initialValue => {
     const [state, setState] = useState(initialValue);
@@ -15,15 +14,15 @@ export const useRefState = initialValue => {
 };
 
 export const getPersistentState = () => {
-    return /^(\[|{).*(\]|})$/.test(localStorage.getItem('state')) ? JSON.parse(localStorage.getItem('state')) : {};
+    return /^(\[|{).*(\]|})$/.test(localStorage.getItem(SAVED_STATE_KEY)) ? JSON.parse(localStorage.getItem(SAVED_STATE_KEY)) : {};
 };
 
 export const setPersistentState = state => {
-    localStorage.setItem('state', JSON.stringify(state));
+    localStorage.setItem(SAVED_STATE_KEY, JSON.stringify(state));
 };
 
 export const clearPersistentState = initialState => {
-    localStorage.removeItem('state', JSON.stringify(initialState));
+    localStorage.removeItem(SAVED_STATE_KEY, JSON.stringify(initialState));
     window.location.reload();
 };
 

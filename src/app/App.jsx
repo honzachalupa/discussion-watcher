@@ -6,6 +6,7 @@ import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
 import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember } from 'Helpers';
+import { SEX_MALE, SEX_FEMALE, DISCUSSION_HISTORY_KEY } from 'Enumerator';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
@@ -33,7 +34,7 @@ const App = () => {
 
     const saveDiscussion = () => {
         let discussionsHistory = [];
-        const discussionsHistoryNode = localStorage.getItem('discussionsHistory');
+        const discussionsHistoryNode = localStorage.getItem(DISCUSSION_HISTORY_KEY);
 
         if (discussionsHistoryNode) {
             discussionsHistory = JSON.parse(discussionsHistoryNode);
@@ -47,7 +48,7 @@ const App = () => {
             }))
         });
 
-        localStorage.setItem('discussionsHistory', JSON.stringify(discussionsHistory));
+        localStorage.setItem(DISCUSSION_HISTORY_KEY, JSON.stringify(discussionsHistory));
     };
 
     const tick = () => {
@@ -165,7 +166,7 @@ const App = () => {
             ...rest,
             members: [...members].map(member => {
                 if (member.id === memberId) {
-                    member.sex = member.sex === 'MALE' ? 'FEMALE' : 'MALE';
+                    member.sex = member.sex === SEX_MALE ? SEX_FEMALE : SEX_MALE;
                 }
 
                 return member;
