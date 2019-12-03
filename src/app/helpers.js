@@ -36,18 +36,13 @@ export const formatTimeFromSeconds = s => {
 };
 
 export const getNewMemberId = members => {
-    const existingIDs = members ? members.map(member => member.id) : [];
-    const id = Math.round(Math.random() * 1000000);
-
-    if (!existingIDs.includes(id)) {
-        return id;
-    } else {
-        return getNewMemberId();
-    }
+    return Math.max(0, ...members.map(member => Number(member.id))) + 1;
 };
 
-export const getDefaultMember = () => {
-    const id = getNewMemberId();
+export const getDefaultMember = members => {
+    const id = getNewMemberId(members);
+
+    console.log({ id });
 
     return {
         id,

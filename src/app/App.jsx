@@ -5,14 +5,14 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Context, app } from '@honzachalupa/helpers';
-import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember, sumObjectProperty } from 'Helpers';
+import { useRefState, getPersistentState, setPersistentState, formatTimeFromSeconds, getDefaultMember } from 'Helpers';
 import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
 
 const App = () => {
-    const defaultTime = 600; // To-do: Change 3600 s.
+    const defaultTime = 360; // To-do: Change 3600 s.
 
     const [timerInterval, setTimerInterval] = useState();
 
@@ -103,28 +103,26 @@ const App = () => {
 
     const addMember = () => {
         setState(prevState => {
-            const { time, members, times, activeMembersCount } = prevState;
-            const timesClone = { ...times };
-            const member = getDefaultMember(members);
+            const { time, members, activeMembersCount } = prevState;
+            const times = { ...prevState.times };
+            const newMember = getDefaultMember(members);
+            let timeForMember = 0;
 
             if (time > 0) {
-                const timesSum = sumObjectProperty(times);
-                const timeForMember = Math.round(timesSum / (Math.max(activeMembersCount, 1) + 1));
-                const timeDifferencePerMember = timeForMember / Math.max(activeMembersCount, 1);
+                Object.keys(times).forEach(key => {
+                    const difference = times[key] / (activeMembersCount) * (activeMembersCount - 1);
 
-                Object.keys(timesClone).forEach(key => {
-                    timesClone[key] += timeDifferencePerMember;
+                    timeForMember += difference;
+                    times[key] -= difference;
                 });
-
-                timesClone[member.id] = timeForMember;
-            } else {
-                timesClone[member.id] = 0;
             }
+
+            times[newMember.id] = timeForMember;
 
             return {
                 ...prevState,
-                members: [...members, member],
-                times: timesClone
+                members: [...members, newMember],
+                times
             };
         });
     };
