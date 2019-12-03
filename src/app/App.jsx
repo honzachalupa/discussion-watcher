@@ -10,9 +10,10 @@ import config from 'app-config';
 import './App.scss';
 import Page_Home from 'Pages/Home';
 import Page_NotFound from 'Pages/NotFound';
+import { sumObjectProperty } from './helpers';
 
 const App = () => {
-    const defaultTime = 360; // To-do: Change 3600 s.
+    const defaultTime = 3600; // To-do: Change 3600 s.
 
     const [timerInterval, setTimerInterval] = useState();
 
@@ -75,7 +76,7 @@ const App = () => {
             setTimerInterval(
                 setInterval(() => {
                     tick();
-                }, 500) // To-do: Change to 1000 ms.
+                }, 1000) // To-do: Change to 1000 ms.
             );
         }
     };
@@ -110,12 +111,17 @@ const App = () => {
 
             if (time > 0) {
                 Object.keys(times).forEach(key => {
-                    const difference = times[key] / (activeMembersCount) * (activeMembersCount - 1);
+                    // console.log(`time[${key}]`, times[key], '=>', times[key] / (activeMembersCount + 1) * activeMembersCount);
 
-                    timeForMember += difference;
-                    times[key] -= difference;
+                    times[key] -= times[key] / (activeMembersCount + 1) * activeMembersCount;
                 });
+
+                timeForMember = time - sumObjectProperty(times);
+
+                // console.log({ time, activeMembersCount, 'sumObjectProperty(times)': sumObjectProperty(times), 'time[newMemberId]': timeForMember });
             }
+
+            // console.log('- - - - - - - - - - - - - - - - - - - -');
 
             times[newMember.id] = timeForMember;
 
@@ -128,43 +134,41 @@ const App = () => {
     };
 
     const removeMember = id => {
-        const times = { ...stateRef.current.times };
+        setState(({ members, times, ...rest }) => {
+            times = { ...times };
 
-        delete times[id];
+            delete times[id];
 
-        setState(prevState => ({
-            ...prevState,
-            members: [...prevState.members].filter(member => member.id !== id),
-            times
-        }));
+            return {
+                ...rest,
+                members: [...members].filter(member => member.id !== id),
+                times
+            };
+        });
     };
 
     const setMemberName = (memberId, name) => {
-        setState(prevState => ({
-            ...prevState,
-            members: prevState.members.map(member => {
+        setState(({ members, ...rest }) => ({
+            ...rest,
+            members: [...members].map(member => {
                 if (member.id === memberId) {
                     member.name = name;
-
-                    return member;
-                } else {
-                    return member;
                 }
+
+                return member;
             })
         }));
     };
 
     const toggleMemberSex = memberId => {
-        setState(prevState => ({
-            ...prevState,
-            members: prevState.members.map(member => {
+        setState(({ members, ...rest }) => ({
+            ...rest,
+            members: [...members].map(member => {
                 if (member.id === memberId) {
                     member.sex = member.sex === 'MALE' ? 'FEMALE' : 'MALE';
-
-                    return member;
-                } else {
-                    return member;
                 }
+
+                return member;
             })
         }));
     };

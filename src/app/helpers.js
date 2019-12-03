@@ -24,7 +24,6 @@ export const setPersistentState = state => {
 
 export const clearPersistentState = initialState => {
     localStorage.removeItem('state', JSON.stringify(initialState));
-
     window.location.reload();
 };
 
@@ -41,8 +40,6 @@ export const getNewMemberId = members => {
 
 export const getDefaultMember = members => {
     const id = getNewMemberId(members);
-
-    console.log({ id });
 
     return {
         id,
