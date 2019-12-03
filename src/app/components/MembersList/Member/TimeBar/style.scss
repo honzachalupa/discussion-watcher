@@ -1,12 +1,19 @@
 [data-component="TimeBar"] {
     width: 100%;
-    padding: 0 17px;
+    padding: 0 15px;
 
     .color-container {
-        height: 8px;
-        background-color: red;
-        border-radius: 4px;
+        width: 100%;
+        border: 1px solid lightgray;
+        border-radius: 6px;
         margin: 10px 0;
+        padding: 1px;
+
+        .color {
+            height: 8px;
+            background-color: red;
+            border-radius: 4px;
+        }
     }
 
     .label {

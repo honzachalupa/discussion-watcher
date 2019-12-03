@@ -24,7 +24,9 @@ export default ({ memberId }) => {
 
     return (
         <div>
-            <div className="color-container" style={{ width: `${progress}%`, backgroundColor: color }} />
+            <div className="color-container">
+                <div className="color" style={{ width: `${progress}%`, backgroundColor: color }} />
+            </div>
 
             <p className="label">{formatTimeFromSeconds(memberTime)}</p>
         </div>
