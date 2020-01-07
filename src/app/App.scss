@@ -1,45 +1,52 @@
 @import 'css-reset-and-normalize-sass/scss/flavored-reset-and-normalize';
-@import url('https://fonts.googleapis.com/css?family=Oxygen&display=swap');
 
 $background-color: #fff;
 
-body {
-    width: 100vw;
-    height: 100vh;
-    background-color: $background-color;
-
-    button {
-        &:hover,
-        &:focus,
-        &:active {
-            border: none;
-            outline: none;
-        }
+html {
+    @media (max-width: 599px) {
+        font-size: 6px;
+    }
+    @media (min-width: 600px) AND (max-width: 1099px) {
+        font-size: 10px;
+    }
+    @media (min-width: 1100px) {
+        font-size: 16px;
     }
 
-    input,
-    textarea,
-    select {
-        &:-webkit-autofill {
-            box-shadow: 0 0 0 1000px white inset;
-
-            &:hover,
-            &:focus {
-                box-shadow: 0 0 0 1000px white inset;
-            }
-        }
-    }
-
-    * {
-        font-family: 'Oxygen', sans-serif;
+    body {
+        width: 100vw;
+        height: 100vh;
+        background-color: $background-color;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         letter-spacing: 1px;
         transition: all 200ms;
+
+        button {
+            &:hover,
+            &:focus,
+            &:active {
+                border: none;
+                outline: none;
+            }
+        }
+
+        input,
+        textarea,
+        select {
+            &:-webkit-autofill {
+                box-shadow: 0 0 0 1000px white inset;
+
+                &:hover,
+                &:focus {
+                    box-shadow: 0 0 0 1000px white inset;
+                }
+            }
+        }
+
+        /* stylelint-disable media-feature-name-no-unknown */
+        @media (prefers-color-scheme: dark) {
+            background-color: black;
+            color: white;
+        }
     }
-
-    /* stylelint-disable media-feature-name-no-unknown */
-
-    /* @media (prefers-color-scheme: dark) {
-        background-color: black;
-        color: white;
-    } */
 }

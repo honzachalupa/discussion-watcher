@@ -11,11 +11,16 @@ const cacheFilesObject = {
     ],
     images: {
         _root: [
-            'icon.png',
-            'sample.png'
+            'icon.png'
         ],
         icons: [
-            'sample.svg'
+            'controls-pause.svg',
+            'controls-stop.svg',
+            'person-male.svg',
+            'person-female.svg',
+            'person-change-sex.svg',
+            'plus.svg',
+            'recycle-bin.svg'
         ],
         favicons: [
             'manifest.json',

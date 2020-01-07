@@ -1,9 +1,9 @@
 module.exports = {
-    name: 'Discussion Watcher',
-    nameShort: 'Discussion Watcher',
+    name: 'Discusser - The discussion watcher',
+    nameShort: 'Discusser',
     description: 'Some description.',
-    accentColor: '#ff5252',
+    accentColor: '#4fc3f7',
     developerName: 'Jan Chalupa',
     developerUrl: 'https://www.honzachalupa.cz/',
-    caching: false // To-do: Enable before releasing.
+    caching: true
 };
